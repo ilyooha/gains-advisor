@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.EfCore.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure;
+namespace Infrastructure.EfCore;
 
 public class AppDbContext : DbContext
 {

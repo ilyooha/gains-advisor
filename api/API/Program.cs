@@ -1,4 +1,4 @@
-using Infrastructure;
+using Infrastructure.EfCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

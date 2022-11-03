@@ -1,8 +1,9 @@
+using Infrastructure.EfCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Services;
 
-namespace Infrastructure;
+namespace Infrastructure.EfCore;
 
 public class MovesRequestHandler : IRequestHandler<CreateMoveRequest, Guid>,
     IRequestHandler<UpdateMoveRequest>, IRequestHandler<DeleteMoveRequest>,

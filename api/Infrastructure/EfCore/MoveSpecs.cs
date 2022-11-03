@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
+using Infrastructure.EfCore.Models;
 
-namespace Infrastructure;
+namespace Infrastructure.EfCore;
 
 public static class MoveSpecs
 {
