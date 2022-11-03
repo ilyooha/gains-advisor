@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new EfMoveConfiguration());
+        modelBuilder.ApplyConfiguration(new EfMuscleGroupConfiguration());
+        modelBuilder.ApplyConfiguration(new EfMuscleGroupConnectionConfiguration());
 
         //
 

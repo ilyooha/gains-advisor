@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Infrastructure.EfCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -81,23 +82,33 @@ public class MovesRequestHandler : IRequestHandler<CreateMoveRequest, Guid>,
 
     public async Task<IMove?> Handle(GetMoveByIdRequest request, CancellationToken cancellationToken)
     {
-        var move = await _dbContext.Moves
-            .AsNoTracking()
-            .FirstOrDefaultAsync(MoveSpecs.ById(request.Id), cancellationToken);
+        var results = await Get(new[]
+        {
+            MoveSpecs.ById(request.Id)
+        }, cancellationToken);
 
-        return move is null
-            ? null
-            : Map(move);
+        return results.FirstOrDefault();
     }
 
     public async Task<IMove[]> Handle(GetMovesRequest request, CancellationToken cancellationToken)
     {
-        var moves = await _dbContext.Moves
-            .AsNoTracking()
-            .Where(MoveSpecs.ByQuery(request.Query))
-            .ToArrayAsync(cancellationToken);
+        return await Get(new[]
+        {
+            MoveSpecs.ByQuery(request.Query)
+        }, cancellationToken);
+    }
 
-        return moves.Select(Map).ToArray();
+    private async Task<IMove[]> Get(IEnumerable<Expression<Func<EfMove, bool>>> filters,
+        CancellationToken cancellationToken)
+    {
+        var queryable = _dbContext.Moves
+            .AsNoTracking();
+
+        queryable = filters.Aggregate(queryable, (current, filter) => current.Where(filter));
+
+        var items = await queryable.ToListAsync(cancellationToken);
+
+        return items.Select(Map).ToArray();
     }
 
     private static IMove Map(EfMove source)
