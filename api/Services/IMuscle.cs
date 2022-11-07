@@ -1,6 +1,6 @@
 namespace Services;
 
-public interface IMuscleGroup
+public interface IMuscle
 {
     Guid Id { get; }
     Guid? ParentId { get; }

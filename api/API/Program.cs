@@ -11,7 +11,7 @@ services.AddControllers();
 services.AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase("app"); });
 
 services.AddMediatR(typeof(MovesRequestHandler),
-    typeof(MuscleGroupsRequestHandler),
+    typeof(MusclesRequestHandler),
     typeof(WeekRecosRequestHandler));
 
 var app = builder.Build();

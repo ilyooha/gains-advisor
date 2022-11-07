@@ -6,18 +6,18 @@ using Services;
 
 namespace Infrastructure.EfCore;
 
-public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupRequest, Guid>,
-    IRequestHandler<UpdateMuscleGroupRequest>, IRequestHandler<DeleteMuscleGroupRequest>,
-    IRequestHandler<GetMuscleGroupByIdRequest, IMuscleGroup?>, IRequestHandler<GetMuscleGroupsRequest, IMuscleGroup[]>
+public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
+    IRequestHandler<UpdateMuscleRequest>, IRequestHandler<DeleteGroupRequest>,
+    IRequestHandler<GetMuscleByIdRequest, IMuscle?>, IRequestHandler<GetMuscleRequest, IMuscle[]>
 {
     private readonly AppDbContext _dbContext;
 
-    public MuscleGroupsRequestHandler(AppDbContext dbContext)
+    public MusclesRequestHandler(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<Guid> Handle(CreateMuscleGroupRequest request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateMuscleRequest request, CancellationToken cancellationToken)
     {
         var parentId = request.ParentId;
 
@@ -29,9 +29,9 @@ public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupReque
             throw new ArgumentException("Name can't be empty.", nameof(request));
 
         var filter = parentId is null
-            ? MuscleGroupSpecs.Root()
-            : MuscleGroupSpecs.Children(parentId.Value);
-        var siblings = await _dbContext.MuscleGroups
+            ? MuscleSpecs.Root()
+            : MuscleSpecs.Children(parentId.Value);
+        var siblings = await _dbContext.Muscles
             .AsNoTracking()
             .Where(filter)
             .ToListAsync(cancellationToken);
@@ -42,14 +42,14 @@ public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupReque
             return existingNode.Id;
 
         // insert entry
-        var newNode = new EfMuscleGroup
+        var newNode = new EfMuscle
         {
             Id = Guid.NewGuid(),
             Name = name
         };
 
         // insert connections: extend ancestor connections and insert the self connection
-        var newNodeConnections = new List<EfMuscleGroupConnection>
+        var newNodeConnections = new List<EfMuscleConnection>
         {
             new()
             {
@@ -61,14 +61,14 @@ public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupReque
 
         if (parentId is not null)
         {
-            var parentConnections = await _dbContext.MuscleGroupConnections
+            var parentConnections = await _dbContext.MuscleConnections
                 .AsNoTracking()
                 .Where(x => x.DescendantId == parentId)
                 .ToListAsync(cancellationToken);
 
             newNodeConnections.AddRange(
                 parentConnections
-                    .Select(x => new EfMuscleGroupConnection
+                    .Select(x => new EfMuscleConnection
                     {
                         AncestorId = x.AncestorId,
                         DescendantId = newNode.Id,
@@ -76,48 +76,48 @@ public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupReque
                     }));
         }
 
-        await _dbContext.MuscleGroups.AddAsync(newNode, cancellationToken);
-        await _dbContext.MuscleGroupConnections.AddRangeAsync(newNodeConnections, cancellationToken);
+        await _dbContext.Muscles.AddAsync(newNode, cancellationToken);
+        await _dbContext.MuscleConnections.AddRangeAsync(newNodeConnections, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return newNode.Id;
     }
 
-    public Task<Unit> Handle(UpdateMuscleGroupRequest request, CancellationToken cancellationToken)
+    public Task<Unit> Handle(UpdateMuscleRequest request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Unit> Handle(DeleteMuscleGroupRequest request, CancellationToken cancellationToken)
+    public Task<Unit> Handle(DeleteGroupRequest request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<IMuscleGroup?> Handle(GetMuscleGroupByIdRequest request, CancellationToken cancellationToken)
+    public async Task<IMuscle?> Handle(GetMuscleByIdRequest request, CancellationToken cancellationToken)
     {
         var results = await Get(new[]
         {
-            MuscleGroupSpecs.ById(request.Id)
+            MuscleSpecs.ById(request.Id)
         }, cancellationToken);
 
         return results.FirstOrDefault();
     }
 
-    public async Task<IMuscleGroup[]> Handle(GetMuscleGroupsRequest request, CancellationToken cancellationToken)
+    public async Task<IMuscle[]> Handle(GetMuscleRequest request, CancellationToken cancellationToken)
     {
         var results = await Get(new[]
         {
-            MuscleGroupSpecs.ByQuery(request.Query),
-            MuscleGroupSpecs.ByParentId(request.ParentId)
+            MuscleSpecs.ByQuery(request.Query),
+            MuscleSpecs.ByParentId(request.ParentId)
         }, cancellationToken);
 
         return results;
     }
 
-    private async Task<IMuscleGroup[]> Get(IEnumerable<Expression<Func<EfMuscleGroup, bool>>> filters,
+    private async Task<IMuscle[]> Get(IEnumerable<Expression<Func<EfMuscle, bool>>> filters,
         CancellationToken cancellationToken)
     {
-        IQueryable<EfMuscleGroup> queryable = _dbContext.MuscleGroups
+        IQueryable<EfMuscle> queryable = _dbContext.Muscles
             .AsNoTracking()
             .Include(x => x.Ancestors!)
             .ThenInclude(x => x.Ancestor)
@@ -127,7 +127,7 @@ public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupReque
 
         var items = await queryable.ToListAsync(cancellationToken);
 
-        IMuscleGroup Map(EfMuscleGroup source)
+        IMuscle Map(EfMuscle source)
         {
             var ancestors = source.Ancestors!.OrderByDescending(x => x.Depth)
                 .Select(x => x.Ancestor!.Name)
@@ -136,7 +136,7 @@ public class MuscleGroupsRequestHandler : IRequestHandler<CreateMuscleGroupReque
             var hasChildren = source.Descendants!.Any(d => d.Depth > 0);
             var path = string.Join("/", ancestors);
 
-            return new MuscleGroup(source.Id, parentId, source.Name, path, hasChildren);
+            return new Muscle(source.Id, parentId, source.Name, path, hasChildren);
         }
 
         return items.Select(Map).ToArray();

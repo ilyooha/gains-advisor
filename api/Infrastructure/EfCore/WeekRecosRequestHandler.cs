@@ -16,7 +16,7 @@ public class WeekRecosRequestHandler : IRequestHandler<GetWeekRecosRequest, IWee
 
     public async Task<IWeekRecos> Handle(GetWeekRecosRequest request, CancellationToken cancellationToken)
     {
-        var exercises = await SelectExercises(request.MuscleGroup, cancellationToken);
+        var exercises = await SelectExercises(request.Muscle, cancellationToken);
         // var recos = await SpreadIntoWorkouts(request.HeavySets, request.Workouts, cancellationToken);
 
         return new WeekRecos
@@ -41,32 +41,32 @@ public class WeekRecosRequestHandler : IRequestHandler<GetWeekRecosRequest, IWee
         throw new NotImplementedException();
     }
 
-    private async Task<EfMove[]> SelectExercises(Guid[]? muscleGroupIds, CancellationToken cancellationToken)
+    private async Task<EfMove[]> SelectExercises(Guid[]? muscleIds, CancellationToken cancellationToken)
     {
-        EfMuscleGroup[] muscleGroups;
-        if (muscleGroupIds is not null)
-            muscleGroups = await _dbContext.MuscleGroups
+        EfMuscle[] muscles;
+        if (muscleIds is not null)
+            muscles = await _dbContext.Muscles
                 .AsNoTracking()
-                .Where(MuscleGroupSpecs.ByIds(muscleGroupIds))
+                .Where(MuscleSpecs.ByIds(muscleIds))
                 .ToArrayAsync(cancellationToken);
         else
-            muscleGroups = await _dbContext.MuscleGroups
+            muscles = await _dbContext.Muscles
                 .AsNoTracking()
-                .Where(MuscleGroupSpecs.Root())
+                .Where(MuscleSpecs.Root())
                 .ToArrayAsync(cancellationToken);
 
         var moves = new Dictionary<Guid, EfMove>();
-        foreach (var muscleGroup in muscleGroups)
+        foreach (var muscle in muscles)
         {
-            var movesForMuscleGroup = await _dbContext.Moves
+            var movesForMuscle = await _dbContext.Moves
                 .AsNoTracking()
                 .Include(x => x.ActivationData)
-                .Where(m => m.ActivationData!.Any(a => a.MuscleGroupId == muscleGroup.Id))
+                .Where(m => m.ActivationData!.Any(a => a.MuscleId == muscle.Id))
                 .OrderBy(x => Guid.NewGuid())
                 .Take(3)
                 .ToListAsync(cancellationToken);
 
-            foreach (var move in movesForMuscleGroup)
+            foreach (var move in movesForMuscle)
                 moves[move.Id] = move;
         }
 
