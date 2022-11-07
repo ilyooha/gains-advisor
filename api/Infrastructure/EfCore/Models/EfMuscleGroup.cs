@@ -8,4 +8,5 @@ public class EfMuscleGroup : IClassifier<EfMuscleGroupConnection>
     public string Name { get; set; } = "";
     public ICollection<EfMuscleGroupConnection>? Ancestors { get; set; }
     public ICollection<EfMuscleGroupConnection>? Descendants { get; set; }
+    public ICollection<EfMuscleGroupActivationData>? Moves { get; set; }
 }

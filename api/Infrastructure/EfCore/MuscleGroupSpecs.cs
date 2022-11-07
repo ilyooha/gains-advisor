@@ -10,6 +10,11 @@ public static class MuscleGroupSpecs
         return g => g.Id == id;
     }
 
+    public static Expression<Func<EfMuscleGroup, bool>> ByIds(Guid[] ids)
+    {
+        return g => ids.Contains(g.Id);
+    }
+
     public static Expression<Func<EfMuscleGroup, bool>> Root()
     {
         return g => !g.Ancestors!.Any(a => a.Depth > 0);

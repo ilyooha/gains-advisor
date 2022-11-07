@@ -19,8 +19,9 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EfMoveConfiguration());
         modelBuilder.ApplyConfiguration(new EfMuscleGroupConfiguration());
         modelBuilder.ApplyConfiguration(new EfMuscleGroupConnectionConfiguration());
+        modelBuilder.ApplyConfiguration(new EfMuscleGroupActivationDataConfiguration());
 
-        //
+        
 
         modelBuilder.Entity<EfMuscleGroup>()
             .HasData(
@@ -394,5 +395,114 @@ public class AppDbContext : DbContext
                     DescendantId = new Guid("e0a5e4bb-987e-438e-a894-9c1a62f1c07f")
                 }
             );
+
+        modelBuilder.Entity<EfMove>()
+            .HasData(
+                new EfMove
+                {
+                    Id = new Guid("1fcb07da-930f-4804-b3e8-367507824ee0"),
+                    Name = "Lying Leg Curl"
+                },
+                new EfMove
+                {
+                    Id = new Guid("a113d887-f9fe-4f61-b1ed-12aa9ce95256"),
+                    Name = "Back Squats"
+                },
+                new EfMove
+                {
+                    Id = new Guid("685fe3ea-ba26-4348-8b9a-f4f649003af4"),
+                    Name = "Romanian Deadlift"
+                },
+                new EfMove
+                {
+                    Id = new Guid("3a68cf1f-996c-4a47-a986-81d261662b0a"),
+                    Name = "Walking Lunges"
+                },
+                new EfMove
+                {
+                    Id = new Guid("86de43c4-2303-4e46-805f-a377f6df3e06"),
+                    Name = "Leg Extension"
+                },
+                new EfMove
+                {
+                    Id = new Guid("4279bc52-14c7-435f-a87a-93a8c7c747de"),
+                    Name = "Leg Press, 45 deg"
+                },
+                new EfMove
+                {
+                    Id = new Guid("9e159dc7-62ee-4e8c-82ed-6213a82672d2"),
+                    Name = "Seating Calf Raises"
+                },
+                new EfMove
+                {
+                    Id = new Guid("38ec82fb-c503-4908-9e51-2c174160167c"),
+                    Name = "Standing Calf Raises"
+                });
+
+        modelBuilder.Entity<EfMuscleGroupActivationData>()
+            .HasData(
+                // Lying leg curl: hamstring
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("1fcb07da-930f-4804-b3e8-367507824ee0"),
+                    MuscleGroupId = new Guid("60724155-2cbe-4506-9f44-fe93a903a295")
+                },
+                // Back squats: quads + glutes
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("a113d887-f9fe-4f61-b1ed-12aa9ce95256"),
+                    MuscleGroupId = new Guid("0ddec529-033d-4435-9813-7ca63950ff2d")
+                },
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("a113d887-f9fe-4f61-b1ed-12aa9ce95256"),
+                    MuscleGroupId = new Guid("5ec7b81b-e3af-4520-9798-b774ccc1758e")
+                },
+                // RDL: glutes + hamstrings
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("685fe3ea-ba26-4348-8b9a-f4f649003af4"),
+                    MuscleGroupId = new Guid("5ec7b81b-e3af-4520-9798-b774ccc1758e")
+                },
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("685fe3ea-ba26-4348-8b9a-f4f649003af4"),
+                    MuscleGroupId = new Guid("60724155-2cbe-4506-9f44-fe93a903a295")
+                },
+                // walking lunge: quads
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("3a68cf1f-996c-4a47-a986-81d261662b0a"),
+                    MuscleGroupId = new Guid("0ddec529-033d-4435-9813-7ca63950ff2d")
+                },
+                // leg extension: quads
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("86de43c4-2303-4e46-805f-a377f6df3e06"),
+                    MuscleGroupId = new Guid("0ddec529-033d-4435-9813-7ca63950ff2d")
+                },
+                // Leg Press, 45 deg: glutes + quads
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("4279bc52-14c7-435f-a87a-93a8c7c747de"),
+                    MuscleGroupId = new Guid("5ec7b81b-e3af-4520-9798-b774ccc1758e")
+                },
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("4279bc52-14c7-435f-a87a-93a8c7c747de"),
+                    MuscleGroupId = new Guid("0ddec529-033d-4435-9813-7ca63950ff2d")
+                },
+                // Seating calf raises: calves
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("9e159dc7-62ee-4e8c-82ed-6213a82672d2"),
+                    MuscleGroupId = new Guid("c2d52c36-b845-4043-8fbe-d44356f1437b")
+                },
+                // Standing calf raises: calves
+                new EfMuscleGroupActivationData
+                {
+                    MoveId = new Guid("38ec82fb-c503-4908-9e51-2c174160167c"),
+                    MuscleGroupId = new Guid("c2d52c36-b845-4043-8fbe-d44356f1437b")
+                });
     }
 }
