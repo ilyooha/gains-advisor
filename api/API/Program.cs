@@ -17,7 +17,8 @@ services.AddDbContext<AppDbContext>(options =>
 
 services.AddMediatR(typeof(MovesRequestHandler),
     typeof(MusclesRequestHandler),
-    typeof(WeekRecosRequestHandler));
+    typeof(WeekRecosRequestHandler),
+    typeof(ActivationDataRequestHandler));
 
 var app = builder.Build();
 

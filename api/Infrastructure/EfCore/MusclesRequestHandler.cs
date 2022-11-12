@@ -8,7 +8,7 @@ namespace Infrastructure.EfCore;
 
 public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
     IRequestHandler<UpdateMuscleRequest>, IRequestHandler<DeleteGroupRequest>,
-    IRequestHandler<GetMuscleByIdRequest, IMuscle?>, IRequestHandler<GetMuscleRequest, IMuscle[]>
+    IRequestHandler<GetMuscleByIdRequest, IMuscleTreeItem?>, IRequestHandler<GetMuscleRequest, IMuscleTreeItem[]>
 {
     private readonly AppDbContext _dbContext;
 
@@ -93,7 +93,7 @@ public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
         throw new NotImplementedException();
     }
 
-    public async Task<IMuscle?> Handle(GetMuscleByIdRequest request, CancellationToken cancellationToken)
+    public async Task<IMuscleTreeItem?> Handle(GetMuscleByIdRequest request, CancellationToken cancellationToken)
     {
         var results = await Get(new[]
         {
@@ -103,7 +103,7 @@ public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
         return results.FirstOrDefault();
     }
 
-    public async Task<IMuscle[]> Handle(GetMuscleRequest request, CancellationToken cancellationToken)
+    public async Task<IMuscleTreeItem[]> Handle(GetMuscleRequest request, CancellationToken cancellationToken)
     {
         var results = await Get(new[]
         {
@@ -114,7 +114,7 @@ public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
         return results;
     }
 
-    private async Task<IMuscle[]> Get(IEnumerable<Expression<Func<EfMuscle, bool>>> filters,
+    private async Task<IMuscleTreeItem[]> Get(IEnumerable<Expression<Func<EfMuscle, bool>>> filters,
         CancellationToken cancellationToken)
     {
         IQueryable<EfMuscle> queryable = _dbContext.Muscles
@@ -127,7 +127,7 @@ public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
 
         var items = await queryable.ToListAsync(cancellationToken);
 
-        IMuscle Map(EfMuscle source)
+        IMuscleTreeItem Map(EfMuscle source)
         {
             var ancestors = source.Ancestors!.OrderByDescending(x => x.Depth)
                 .Select(x => x.Ancestor!.Name)
@@ -136,7 +136,7 @@ public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
             var hasChildren = source.Descendants!.Any(d => d.Depth > 0);
             var path = string.Join("/", ancestors);
 
-            return new Muscle(source.Id, parentId, source.Name, path, hasChildren);
+            return new MuscleTreeItem(source.Id, parentId, source.Name, path, hasChildren);
         }
 
         return items.Select(Map).ToArray();
