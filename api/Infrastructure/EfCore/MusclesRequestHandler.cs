@@ -3,11 +3,12 @@ using Infrastructure.EfCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.Muscles;
 
 namespace Infrastructure.EfCore;
 
 public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
-    IRequestHandler<UpdateMuscleRequest>, IRequestHandler<DeleteGroupRequest>,
+    IRequestHandler<UpdateMuscleRequest>, IRequestHandler<DeleteMuscleRequest>,
     IRequestHandler<GetMuscleByIdRequest, IMuscleTreeItem?>, IRequestHandler<GetMuscleRequest, IMuscleTreeItem[]>
 {
     private readonly AppDbContext _dbContext;
@@ -88,7 +89,7 @@ public class MusclesRequestHandler : IRequestHandler<CreateMuscleRequest, Guid>,
         throw new NotImplementedException();
     }
 
-    public Task<Unit> Handle(DeleteGroupRequest request, CancellationToken cancellationToken)
+    public Task<Unit> Handle(DeleteMuscleRequest request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

@@ -3,6 +3,7 @@ using Infrastructure.EfCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.Moves;
 
 namespace Infrastructure.EfCore;
 

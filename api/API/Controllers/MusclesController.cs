@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Muscles;
 
 namespace API.Controllers;
 
@@ -49,7 +50,7 @@ public class MusclesController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        await _mediator.Send(new DeleteGroupRequest(id), cancellationToken);
+        await _mediator.Send(new DeleteMuscleRequest(id), cancellationToken);
         return Ok();
     }
 }

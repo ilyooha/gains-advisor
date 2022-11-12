@@ -1,5 +1,5 @@
 using MediatR;
 
-namespace Services;
+namespace Services.Muscles;
 
 public record CreateMuscleRequest(string Name, Guid? ParentId = null) : IRequest<Guid>;

@@ -1,5 +1,5 @@
 using MediatR;
 
-namespace Services;
+namespace Services.ActivationData;
 
 public record GetActivationDataRequest(Guid MoveId) : IRequest<IMuscleActivationData[]>;

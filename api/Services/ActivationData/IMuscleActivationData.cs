@@ -1,4 +1,6 @@
-namespace Services;
+using Services.Muscles;
+
+namespace Services.ActivationData;
 
 public interface IMuscleActivationData
 {

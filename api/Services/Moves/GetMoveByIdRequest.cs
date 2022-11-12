@@ -1,5 +1,5 @@
 using MediatR;
 
-namespace Services;
+namespace Services.Moves;
 
 public record GetMoveByIdRequest(Guid Id) : IRequest<IMove?>;

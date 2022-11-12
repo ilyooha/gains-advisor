@@ -1,5 +1,5 @@
 using MediatR;
 
-namespace Services;
+namespace Services.Muscles;
 
 public record GetMuscleByIdRequest(Guid Id) : IRequest<IMuscleTreeItem?>;

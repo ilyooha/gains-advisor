@@ -1,3 +1,5 @@
+using Services.Moves;
+
 namespace Services;
 
 public interface IMoveSets

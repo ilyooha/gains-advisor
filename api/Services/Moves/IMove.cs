@@ -1,6 +1,6 @@
-namespace Services;
+namespace Services.Moves;
 
-public interface IMuscle
+public interface IMove
 {
     Guid Id { get; }
     string Name { get; }

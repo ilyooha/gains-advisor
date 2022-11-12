@@ -1,5 +1,5 @@
 using MediatR;
 
-namespace Services;
+namespace Services.ActivationData;
 
 public record DeleteActivationDataRequest(Guid MoveId, Guid MuscleId) : IRequest;
